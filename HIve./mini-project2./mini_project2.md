@@ -53,7 +53,7 @@ fields terminated by ','
 tblproperties ("skip.header.line.count" = "1");
 ```
 ```
-load data inpath '/tmp/assignments/' into table parking_violations;
+load data loal  inpath  file'///tmp/data/Parking_violation2017.csv' into table parking_violations;
 ```
 as the above table uses string datatype for dates, so in order to correct that a new table is created with the required datatype...
 ```

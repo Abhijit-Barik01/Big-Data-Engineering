@@ -8,8 +8,8 @@ from confluent_kafka.schema_registry import SchemaRegistryClient
 
 
 from confluent_kafka.schema_registry import SchemaRegistryClient
-import datetime
 
+import datetime
 
 API_KEY = '5EDWNFRIVKUNMNRV'
 ENDPOINT_SCHEMA_URL  = 'https://psrc-vrpp5.us-east-2.aws.confluent.cloud'
@@ -85,7 +85,7 @@ def main(topic):
     consumer = Consumer(consumer_conf)
     consumer.subscribe([topic])
 
-
+    counter=0
     while True:
         try:
             # SIGINT can't be handled when polling, limit timeout to 1 second.
@@ -96,13 +96,13 @@ def main(topic):
             car = json_deserializer(msg.value(), SerializationContext(msg.topic(), MessageField.VALUE))
 
             if car is not None:
-                    counter+=1
-                    print(datetime.datetime.now())
-                    print("User record {}: order: {}\n"
+                counter+=1
+                print(datetime.datetime.now())
+                print("User record {}: order: {}\n"
                           .format(msg.key(), car))
 
                   
-                    print('Total messages fetched till now:', counter)
+                print('Total messages fetched till now:', counter)
         except KeyboardInterrupt:
             break
 

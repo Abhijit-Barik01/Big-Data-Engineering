@@ -8,7 +8,7 @@ from confluent_kafka.schema_registry import SchemaRegistryClient
 
 
 from confluent_kafka.schema_registry import SchemaRegistryClient
-
+import datetime
 
 
 API_KEY = '5EDWNFRIVKUNMNRV'
@@ -96,7 +96,7 @@ def main(topic):
             car = json_deserializer(msg.value(), SerializationContext(msg.topic(), MessageField.VALUE))
 
             if car is not None:
-                 counter+=1
+                    counter+=1
                     print(datetime.datetime.now())
                     print("User record {}: order: {}\n"
                           .format(msg.key(), car))

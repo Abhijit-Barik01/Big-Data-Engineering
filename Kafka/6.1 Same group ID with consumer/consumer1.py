@@ -97,12 +97,12 @@ def main(topic):
 
             if car is not None:
                  counter+=1
-                    print(datetime.datetime.now())
-                    print("User record {}: order: {}\n"
+                    
+                 print("User record {}: order: {}\n"
                           .format(msg.key(), car))
 
                   
-                    print('Total messages fetched till now:', counter)
+                 print('Total messages fetched till now:', counter)
         except KeyboardInterrupt:
             break
 

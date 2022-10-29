@@ -96,8 +96,13 @@ def main(topic):
             car = json_deserializer(msg.value(), SerializationContext(msg.topic(), MessageField.VALUE))
 
             if car is not None:
-                print("User record {}: car: {}\n"
-                      .format(msg.key(), car))
+               counter+=1
+                    print(datetime.datetime.now())
+                    print("User record {}: order: {}\n"
+                          .format(msg.key(), car))
+
+                  
+                    print('Total messages fetched till now:', counter)
         except KeyboardInterrupt:
             break
 

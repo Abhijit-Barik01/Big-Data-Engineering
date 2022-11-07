@@ -1,0 +1,85 @@
+create 'hbase_table','QUANTITYORDERED1','PRICEEACH1',
+'ORDERLINENUMBER1','SALES1','STATUS1','QTR_ID1','MONTH_ID1',
+'YEAR_ID1','PRODUCTLINE1','MSRP1','PRODUCTCODE1','PHONE1','CITY1','STATE1',
+'POSTALCODE1','COUNTRY1','TERRITORY1','CONTACTLASTNAME1','CONTACTFIRSTNAME1','DEALSIZE1'
+
+
+
+create  external table if  not exists hive_temp
+(
+ORDERNUMBER int,
+QUANTITYORDERED int ,
+PRICEEACH float,
+ORDERLINENUMBER int,
+SALES string,
+STATUS string ,
+QTR_ID string,
+MONTH_ID string,
+YEAR_ID string,
+PRODUCTLINE string,
+MSRP string,
+PRODUCTCODE string,
+PHONE string,
+CITY string,
+STATE string,
+POSTALCODE string,
+COUNTRY string,
+TERRITORY string,
+CONTACTLASTNAME string,
+CONTACTFIRSTNAME string,
+DEALSIZE string
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+TBLPROPERTIES("skip.header.line.count"="1");
+
+
+
+load data local inpath 'file:///tmp/sales.csv' into table hive_temp;
+
+select * from  hive_temp limit 10;
+
+
+
+
+
+create  external table if  not exists hive_table1
+(
+key int,
+QUANTITYORDERED int ,
+PRICEEACH float,
+ORDERLINENUMBER int,
+SALES string,
+STATUS string ,
+QTR_ID string,
+MONTH_ID string,
+YEAR_ID string,
+PRODUCTLINE string,
+MSRP string,
+PRODUCTCODE string,
+PHONE string,
+CITY string,
+STATE string,
+POSTALCODE string,
+COUNTRY string,
+TERRITORY string,
+CONTACTLASTNAME string,
+CONTACTFIRSTNAME string,
+DEALSIZE string
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+WITH SERDEPROPERTIES
+("hbase.columns.mapping"=":key,QUANTITYORDERED1:QUANTITYORDERED,PRICEEACH1:PRICEEACH,ORDERLINENUMBER1:ORDERLINENUMBER, SALES1:SALES,STATUS1:STATUS,QTR_ID1:QTR_ID,MONTH_ID1:MONTH_ID,YEAR_ID1:YEAR_ID ,PRODUCTLINE1:PRODUCTLINE, MSRP1:MSRP,PRODUCTCODE1:PRODUCTCODE, PHONE1:PHONE,CITY1:CITY, STATE1:STATE,POSTALCODE1:POSTALCODE, COUNTRY1:COUNTRY, TERRITORY1:TERRITORY,CONTACTLASTNAME1:CONTACTLASTNAME,CONTACTFIRSTNAME1:CONTACTFIRSTNAME, DEALSIZE1:DEALSIZE")
+TBLPROPERTIES("hbase.table.name"="hbase_table")
+;
+
+# NOTE :- mapping ke time space nehi dena hai
+
+insert into table hive_table select * from hive_temp;
+select * from hive_table;
+
+scan 'hbase_table'

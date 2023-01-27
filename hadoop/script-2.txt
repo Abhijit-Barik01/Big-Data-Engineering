@@ -1,0 +1,216 @@
+echo $JAVA_HOME
+hostname
+
+$ sudo su
+# whoami        
+
+# sudo addgroup hadoop
+
+# sudo adduser hduser
+
+# sudo  adduser  hduser hadoop  
+
+$ sudo visudo
+
+hduser ALL=(ALL) ALL 
+
+sudo apt-get install openssh-server
+
+ssh-keygen  
+
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys   
+
+chmod 700 ~/.ssh/authorized_keys   
+
+sudo /etc/init.d/ssh  restart
+
+ssh  localhost
+
+sudo vim /etc/sysctl.conf
+
+hadoop
+
+
+# disable ipv6			
+net.ipv6.conf.all.disable_ipv6 = 1	
+net.ipv6.conf.default.disable_ipv6 = 1	
+net.ipv6.conf.lo.disable_ipv6 = 1	
+
+
+
+cat /proc/sys/net/ipv6/conf/all/disable_ipv6 
+
+
+$ sudo mv ~/Desktop/hadoop-3.3.1.tar.gz /usr/local/
+Enter password: hadoop
+$  cd /usr/local
+   sudo tar -xvf hadoop-3.3.1.tar.gz
+   sudo rm hadoop-3.3.1.tar.gz
+   sudo ln -s hadoop-3.3.1 hadoop
+   sudo chown -R hduser:hadoop hadoop-3.3.1
+   sudo chmod 777 hadoop-3.3.1
+
+
+$ sudo vim /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+export HADOOP_OPTS=-Djava.net.preferIPv4Stack=true 
+export HADOOP_HOME_WARN_SUPPRESS="TRUE" 
+export JAVA_HOME=/usr/local/java/jdk
+
+
+$ vim ~/.bashrc  
+#type  :$ to go to the last line and then press I to switch to Insert mode
+
+# Set Hadoop-related environment variables 
+export HADOOP_HOME=/usr/local/hadoop 
+export HADOOP_MAPRED_HOME=${HADOOP_HOME}
+export HADOOP_COMMON_HOME=${HADOOP_HOME}
+export HADOOP_HDFS_HOME=${HADOOP_HOME}
+export HADOOP_YARN_HOME=${HADOOP_HOME}
+export HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
+
+# Native Path
+export HADOOP_COMMON_LIB_NATIVE_DIR=${HADOOP_PREFIX}/lib/native
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_PREFIX/lib"
+
+# Set JAVA_HOME (we will also configure JAVA_HOME directly for Hadoop later on) 
+export JAVA_HOME=/usr/local/java/jdk
+# Some convenient aliases and functions for running Hadoop-related commands 
+unaliasfs&> /dev/null 
+aliasfs="hadoop fs" 
+unaliashls&> /dev/null 
+aliashls="fs -ls"  
+
+export PATH=$PATH:$HADOOP_HOME/bin:$PATH:$JAVA_HOME/bin:$HADOOP_HOME/sbin 
+
+
+$ sudo  vim /usr/local/hadoop/etc/hadoop/yarn-site.xml
+
+<property>
+	    <name>yarn.nodemanager.aux-services</name>
+	    <value>mapreduce_shuffle</value>
+  	</property>
+  	<property>
+     <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+   <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+  	</property>
+   <property>
+      <name>yarn.nodemanager.vmem-check-enabled</name>
+      <value>false</value>
+      <description>Whether virtual memory limits will be enforced for containers</description>
+   </property>
+
+  <property>
+     <name>yarn.nodemanager.vmem-pmem-ratio</name>
+      <value>4</value>
+      <description>Ratio between virtual memory to physical memory when setting memory limits for containers</description>
+  </property>
+
+$ sudo vim /usr/local/hadoop/etc/hadoop/core-site.xml
+
+<property> 
+	    <name>hadoop.tmp.dir</name> 
+	    <value>/app/hadoop/tmp</value> 
+	    <description>A base for other temporary directories.</description> 	
+	</property>  
+	
+ <property>
+	 <name>fs.default.name</name> 				
+	<value>hdfs://localhost:9000</value> 
+	<description>default host and port</description> 
+	</property>
+
+<property>
+    <name>hadoop.proxyuser.hduser.hosts</name>
+    <value>*</value>
+ </property>
+
+<property>
+    <name>hadoop.proxyuser.hduser.groups</name>
+    <value>*</value>
+</property>
+
+sudo mkdir -p /app/hadoop/tmp
+sudo chown hduser:hadoop -R /app/hadoop/tmp
+sudo chmod 750 /app/hadoop/tmp
+
+
+$ sudo vim  /usr/local/hadoop/etc/hadoop/mapred-site.xml
+  <property>
+    <name>mapreduce.framework.name</name>
+    	<value>yarn</value>
+  	</property>
+  <property>
+    	<name>mapreduce.jobhistory.address</name>
+  		<value>localhost:10020</value>
+  		<description>Host and port for Job History Server (default 			
+		0.0.0.0:10020)</description>
+</property>
+
+   <property>
+        <name>yarn.app.mapreduce.am.env</name>
+        <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+    </property>
+    <property>
+        <name>mapreduce.map.env</name>
+        <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.env</name>
+        <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+    </property>
+
+sudo mkdir -p /usr/local/hadoop_tmp/hdfs/namenode
+sudo mkdir -p /usr/local/hadoop_tmp/hdfs/datanode
+sudo chown hduser:hadoop -R /usr/local/hadoop_tmp/
+
+
+$ sudo vim /usr/local/hadoop/etc/hadoop/hdfs-site.xml
+Add the following snippet between<configuration> ... </configuration>
+
+  <property>
+    <name>dfs.replication</name>
+    <value>1</value>
+  </property>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>file:/usr/local/hadoop_tmp/hdfs/namenode</value>
+  </property>
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>file:/usr/local/hadoop_tmp/hdfs/datanode</value>
+  </property>
+
+
+$ hadoop namenode -format  
+
+$ start-dfs.sh       --starts NN,SNN,DN  --Type Yes if anything asked for
+$ start-yarn.sh   --starts NodeManager,ResourceManager
+
+$ start-dfs.sh && start-yarn.sh  --In a single line
+$ start-all.sh
+
+
+$mr-jobhistory-daemon.sh start historyserver
+$mr-jobhistory-daemon.sh stop historyserver
+
+$ jps 
+
+$ hadoop fs -ls
+
+$ hadoop fs -mkdir -p /user/hduser (Deprecated)
+$ hdfs dfs -mkdir -p /user/hduser    (Use this)
+
+
+$ hdfs dfs -ls
+
+
+NameNode	http://localhost:9870
+
+ResourceManager	http://localhost:8088
+
+MapReduce JobHistory Server	http://localhost:19888
+
+$ more /usr/local/hadoop/logs/hadoop-hduser-datanode-ubuntu.log
+
+sudo rm -rf  /usr/local/hadoop_tmp/hdfs/datanode/*
+

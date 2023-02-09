@@ -1,0 +1,49 @@
+sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop
+sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start
+sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --configure
+
+
+$ sudo apt-get -y update                  immediately
+$ sudo apt-get -y upgrade                took 17 minutes
+$ sudo apt-get update
+
+
+$ sudo apt-get install vim
+
+$ sudo mkdir /usr/local/java
+$ sudo chmod 777 /usr/local/java
+$ sudo cp ~/Desktop/jdk-8u271-linux-x64.tar.gz /usr/local/java
+
+$ cd /usr/local/java
+$ sudo tar xvzf  jdk-8u271-linux-x64.tar.gz
+$ sudo ln -s  jdk1.8.0_271  jdk
+
+
+$ sudo rm  jdk-8u271-linux-x64.tar.gz
+
+
+$ sudo vim /etc/profile
+#Press esc : $  , Press enter to go to last line.Then press i to get into insert mode
+
+JAVA_HOME=/usr/local/java/jdk
+JRE_HOME=$JAVA_HOME/jre
+PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
+export JAVA_HOME
+export JRE_HOME
+export PATH
+
+
+sudo update-alternatives --install "/usr/bin/java" "java" "/usr/local/java/jdk/bin/java" 1
+update-alternatives: using /usr/local/java/jdk-14/bin/java to provide /usr/bin/java (java) in auto mode
+sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/local/java/jdk/bin/javac" 1
+update-alternatives: using /usr/local/java/jdk-14/bin/javac to provide /usr/bin/javac (javac) in auto mode
+
+
+sudo update-alternatives --set java /usr/local/java/jdk/bin/java
+sudo update-alternatives --set javac /usr/local/java/jdk/bin/javac
+
+
+$  .   /etc/profile
+
+
+suraz@ubuntu:~$ java -version
